@@ -73,4 +73,27 @@ In short, these are the 2 main disadvantages of **KMeans**:
 * lack of flexibility in cluster shape
 * lack of probabilistic cluster assignment
 
+# The EM Algorithm in the context of GMM
+
+A **Gaussian mixture model (GMM)** attempts to find a mixture of multidimensional Gaussian probability distributions that best model any input dataset. In the simplest case, **GMM**s can be used for finding clusters in the same manner as **KMeans** does. 
+
+```py
+from sklearn.mixture import GaussianMixture
+
+gmm = GaussianMixture(n_components=5).fit(X)
+labels = gmm.predict(X)
+plt.figure(dpi=175)
+plt.scatter(X[ : , 0], X[ : , 1], c=labels, s=7, cmap='viridis')
+```
+
+![image3](./images/image3.png)
+
+But because **GMM** contains a probabilistic model under the hood, it is also possible to find the probability that any point in the given dataset belongs to any given cluster.
+
+```py
+probabilities = gmm.predict_proba(X)
+probabilities
+```
+
+The **probabilities** variable is a **numpy array**, it has a shape of **number of samples** x **number of clusters**. Each row corresponds to a single data point and the **j**th column corresponds to the probability that the sample belongs to the **j**th cluster.
 
