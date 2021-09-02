@@ -97,3 +97,64 @@ probabilities
 
 The **probabilities** variable is a **numpy array**, it has a shape of **number of samples** x **number of clusters**. Each row corresponds to a single data point and the **j**th column corresponds to the probability that the sample belongs to the **j**th cluster.
 
+Under the hood, the **GMM** algorithm has something in common with **KMeans**. They both use the expectation–maximization approach that qualitatively does the following:
+
+1. Choose starting guesses for the location and shape
+2. Repeat until converged
+    <ol type='a'>
+        <li>
+            <i>E-Step</i>: for each point, find weights encoding the probability of membership in each cluster
+        </li>
+        <li>
+            <i>M-Step</i>: for each cluster, update its location, normalization, and shape based on all data points, making use of the weights
+        </li>
+    </ol>
+
+In the result of this approach, each cluster is associated with a smooth Gaussian Model (not with a hard-edged sphere as in **KMeans**). Also in practice this algorithm uses multiple random initializations because just like **KMeans** it might miss the globally optimal solution.
+
+The following function will help us visualize the locations and shapes of the **GMM** clusters.
+
+```py
+from matplotlib.patches import Ellipse
+
+def plot_gmm(gmm, X, label=True, ax=None):
+    def draw_ellipse(position, covariance, ax=None, **kwargs):
+        ax = ax or plt.gca()
+
+        if covariance.shape == (2, 2):
+            U, s, Vt = np.linalg.svd(covariance)
+            angle = np.degrees(np.arctan2(U[1, 0], U[0, 0]))
+            width, height = 2 * np.sqrt(s)
+        else:
+            angle = 0
+            width, height = 2 * np.sqrt(covariance)
+
+        for nsig in range(1, 4):
+            ax.add_patch(Ellipse(
+                position, nsig * width, nsig * height,
+                angle, **kwargs
+            ))
+    
+    ax = ax or plt.gca()
+    labels = gmm.fit(X).predict(X)
+    if label:
+        ax.scatter(X[:, 0], X[:, 1], c=labels, s=7, cmap='viridis', zorder=2) 
+    else:
+        ax.scatter(X[:, 0], X[:, 1], s=7, zorder=2)
+    
+    ax.axis('equal')
+    w_factor = 0.2 / gmm.weights_.max()
+    for pos, covar, w in zip(gmm.means_, gmm.covariances_, gmm.weights_):
+        draw_ellipse(pos, covar, alpha=w * w_factor)
+```
+
+Now let's use the function to see how the clusters are shaped now on our data.
+
+```py
+gmm = GaussianMixture(n_components=5, random_state=420)
+plt.figure(dpi=175)
+plot_gmm(gmm, X)
+```
+
+![image4](./images/image4.png)
+
