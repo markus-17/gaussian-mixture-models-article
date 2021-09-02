@@ -67,4 +67,10 @@ plot_kmeans(kmeans, X)
 
 ![image2](./images/image2.png)
 
+Another observation that has to be made is that these cluster models are always circular. **KMeans** has no builtin way to deal with clusters that have oblong or elliptical shapes. 
+
+In short, these are the 2 main disadvantages of **KMeans**:
+* lack of flexibility in cluster shape
+* lack of probabilistic cluster assignment
+
 
