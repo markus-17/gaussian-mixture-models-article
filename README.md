@@ -2,7 +2,6 @@
 
 * **GMM** vs **KMeans**
 * The **EM Algorithm** in the context of **GMM**
-* How to generate new data using **GMM**
 
 
 # Introduction
@@ -158,3 +157,36 @@ plot_gmm(gmm, X)
 
 ![image4](./images/image4.png)
 
+In order, to make this advantage of **GMM** a little more obvious we will create a new sample dataset that has a different shape.
+
+```py
+X, y_true = make_blobs(n_samples=400, centers=4, cluster_std=0.60, random_state=0)
+X = X[:, ::-1] # flip axes for better plotting
+
+rng = np.random.RandomState(13)
+X_stretched = np.dot(X, rng.randn(2, 2))
+```
+
+Now let's apply both algorithms and see what the resulting clusters look like.
+
+```py
+kmeans = KMeans(n_clusters=4, random_state=0)
+plot_kmeans(kmeans, X_stretched)
+```
+
+![image5](./images/image5.png)
+
+```py
+gmm = GaussianMixture(n_components=4, covariance_type='full', random_state=42)
+plt.figure(dpi=175)
+plot_gmm(gmm, X_stretched)
+```
+
+![image6](./images/image6.png)
+
+These results make it clear that **GMM** has a lot more flexibility in cluster shape.
+
+Also, note that for the previous fit the hyperparameter **covariance_type** was set differently. This hyperparameter controls the degrees of freedom in the shape of each cluster. 
+* The default is **covariance_type="diag"**, which means that the size of the cluster along each dimension can be set independently, with the resulting ellipse constrained to align with the axes.
+* A slightly simpler and faster model is **covariance_type="spherical"**, which constrains the shape of the cluster such that all dimensions are equal. The resulting clustering will have similar characteristics to that of **KMeans**, though it is not entirely equivalent.
+* A more complicated and computationally expensive model (especially as the number of dimensions grows) is to use **covariance_type="full"**, which allows each cluster to be modeled as an ellipse with arbitrary orientation.
