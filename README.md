@@ -39,7 +39,7 @@ We can visualize the way **KMeans** assigns clusters by placing a circle (in hig
 ```py
 from scipy.spatial.distance import cdist
 
-def plot_kmeans(kmeans, X, n_clusters=4, ax=None):
+def plot_kmeans(kmeans, X, ax=None):
     labels = kmeans.fit_predict(X)
 
     # plot the input data
